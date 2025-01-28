@@ -10,9 +10,8 @@ def calculate_checksum(data: List[int]) -> int:
         print(f"Error calculating checksum: {e}")
         return 0
 
-def construct_data_packet(current_direction: int, current_speed: int) -> bytes:
+def construct_data_packet(current_direction: int, current_speed: int, sequence_number: int) -> bytes:
     """Construct a data packet using the given direction and speed."""
-    global sequence_number
     try:
         sequence_number += 1
         data = [
