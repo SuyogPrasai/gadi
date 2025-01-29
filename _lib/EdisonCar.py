@@ -1,7 +1,7 @@
 from _lib.car import CarController
 from _lib.data_packet import construct_data_packet
-import asyncio
-import asyncio_serial
+import time
+import serial
 
 # Constants for serial communication
 SERIAL_PORT: str = "COM11"  # Replace with your Arduino's serial port (e.g., "COM3" on Windows, "/dev/ttyUSB0" on Linux)
@@ -11,9 +11,11 @@ class EdisonCar(CarController):
     """
     Extends CarController with additional movement styles and functionalities.
     """
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initialize the EdisonCar class."""
         super().__init__()
-        self.sno = 0
+        self.seq_no = 0
+
 
     def move_straight(self) -> None:
         """Move the car straight forward."""
@@ -48,24 +50,22 @@ class EdisonCar(CarController):
 
     def car_status(self) -> str:
         """Retrieve the current status of the car."""
-        return f"Speed: {self.current_speed}, Direction: {self.current_direction}"
+        return self.current_speed, self.current_direction
 
-    async def start(self) -> None:
+    def start(self) -> None:
         """
         Monitor the car's direction and speed status and send data packets.
         """
         try:
-            async with asyncio_serial.aio_serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1) as ser:
+            with serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1) as ser:
                 print(f"Serial connection established on {SERIAL_PORT} at {BAUD_RATE} baud.")
                 while True:
-                    self.sno += 1
-                    status = self.car_status()
-                    print(status)
-                    data_packet = construct_data_packet(self.current_direction, self.current_speed, sequence_number=self.sno)
-                    print(f"Data Packet: {data_packet}")
+                    data_packet = construct_data_packet(self.current_direction, self.current_speed, self.seq_no)
+                    # print(' '.join(f'{byte:02x}' for byte in data_packet))  # Print the data packet in hexadecimal format
                     ser.write(data_packet)
-                    await asyncio.sleep(0.2)
-        except asyncio_serial.SerialException as e:
+                    time.sleep(0.1)
+        except serial.SerialException as e:
             print(f"Failed to connect to Transmitter at {SERIAL_PORT}: {e}")
+
         except Exception as e:
             print(f"An unexpected error occurred: {e}")

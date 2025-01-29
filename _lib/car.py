@@ -1,6 +1,6 @@
 from typing import List
-import time
 
+import time
 
 class CarController:
     """
@@ -8,6 +8,7 @@ class CarController:
     """
     def __init__(self):
         """Initialize the car's state, speed, and direction."""
+
         self.control_states = {
             'turn_left': False,
             'turn_right': False,
@@ -15,6 +16,7 @@ class CarController:
             'accelerating': False,
             'decelerating': False
         }
+        
         self.current_speed = 0  # Current speed of the car
         self.current_direction = 90  # Default direction (90 degrees = forward)
 
@@ -63,7 +65,9 @@ class CarController:
     def move_forward(self) -> None:
         """Move the car forward at the minimum speed."""
         self.control_states['move_forward'] = True
-        self.current_speed = self.MIN_SPEED
+        if self.current_speed == 0:
+            self.current_speed = self.MIN_SPEED
+        self.current_speed = self.current_speed 
 
     def stop(self) -> None:
         """Stop the car and reset all control states."""
